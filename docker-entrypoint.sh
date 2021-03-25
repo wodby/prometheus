@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+if [[ -n "${DEBUG}" ]]; then
+    set -x
+fi
+
+_gotpl() {
+    if [[ -f "/etc/gotpl/$1" ]]; then
+        gotpl "/etc/gotpl/$1" > "$2"
+    fi
+}
+
+process_templates() {
+    _gotpl "/etc/gotpl/prometheus.yaml.tmpl" "/etc/prometheus/prometheus.yaml"
+    _gotpl "/etc/gotpl/alerts.yaml.tmpl" "/etc/prometheus/alerts.yaml"
+}
+
+sudo init_volumes
+
+process_templates
+
+exec "$@"

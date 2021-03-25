@@ -1,0 +1,27 @@
+name: Build docker image
+
+on:
+  push:
+    branches:
+    - main
+
+    tags:
+    - '*'
+
+  pull_request:
+
+env:
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: get short SHA
+      id: sha
+      run: echo "::set-output name=sha8::$(echo ${GITHUB_SHA} | cut -c1-8)"
+    - uses: ./.github/actions
+      with:
+        tags: ${{ steps.sha.outputs.sha8 }},latest
