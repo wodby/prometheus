@@ -1,6 +1,9 @@
 name: Build
 description: Build docker image
 inputs:
+  version:
+    description: app version
+    required: true
   tags:
     description: image tags
     required: true
@@ -9,6 +12,7 @@ runs:
   steps:
   - name: Build image
     env:
+      APP_VER: ${{ inputs.version }}
       TAGS: ${{ inputs.tags }}
     run: |
       set -e

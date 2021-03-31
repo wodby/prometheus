@@ -1,7 +1,7 @@
-PROM_VER ?= v2.25.0
-PROM_MINOR_VER ?= $(shell echo "${PROM_VER}" | grep -oE '^v[0-9]+\.[0-9]+')
+APP_VER ?= v2.25.0
+APP_MINOR_VER ?= $(shell echo "${APP_VER}" | grep -oE '^v[0-9]+\.[0-9]+')
 
-TAG ?= $(PROM_MINOR_VER)
+TAG ?= $(APP_MINOR_VER)
 
 ALPINE_VER ?= 3.13
 
@@ -12,7 +12,7 @@ else
 endif
 
 REPO = wodby/prometheus
-NAME = prometheus-$(PROM_MINOR_VER)
+NAME = prometheus-$(APP_MINOR_VER)
 
 ifneq ($(STABILITY_TAG),)
     ifneq ($(TAG),latest)
@@ -25,7 +25,7 @@ default: build
 build:
 	docker build -t $(REPO):$(TAG) \
         --build-arg BASE_IMAGE_TAG=$(BASE_IMAGE_TAG) \
-	    --build-arg PROM_VER=$(PROM_VER) ./
+	    --build-arg APP_VER=$(APP_VER) ./
 .PHONY: build
 
 push:

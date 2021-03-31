@@ -1,11 +1,11 @@
-ARG PROM_VER
+ARG APP_VER
 ARG BASE_IMAGE_TAG
 
-FROM prom/prometheus:${PROM_VER}
+FROM prom/prometheus:${APP_VER}
 
 FROM wodby/alpine:${BASE_IMAGE_TAG}
 
-ENV PROM_VER="${PROM_VER}"
+ENV PROM_VER="${APP_VER}"
 
 COPY --from=0 /bin/prometheus                           /usr/local/bin/
 COPY --from=0 /bin/promtool                             /usr/local/bin/
