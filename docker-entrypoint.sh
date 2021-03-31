@@ -13,8 +13,8 @@ _gotpl() {
 }
 
 process_templates() {
-    _gotpl "/etc/gotpl/prometheus.yaml.tmpl" "/etc/prometheus/prometheus.yaml"
-    _gotpl "/etc/gotpl/alerts.yaml.tmpl" "/etc/prometheus/alerts.yaml"
+    _gotpl "prometheus.yaml.tmpl" "/etc/prometheus/prometheus.yaml"
+    _gotpl "alerts.yaml.tmpl" "/etc/prometheus/alerts.yaml"
 }
 
 sudo init_volumes
