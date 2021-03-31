@@ -5,6 +5,8 @@ FROM prom/prometheus:${APP_VER}
 
 FROM wodby/alpine:${BASE_IMAGE_TAG}
 
+ARG APP_VER
+
 ENV PROM_VER="${APP_VER}"
 
 COPY --from=0 /bin/prometheus                           /usr/local/bin/
