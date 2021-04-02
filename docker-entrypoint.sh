@@ -15,20 +15,9 @@ _gotpl() {
 process_templates() {
   _gotpl "prometheus.yaml.tmpl" "/etc/prometheus/prometheus.yaml"
   _gotpl "prometheus-init.sh.tmpl" "/usr/local/bin/prometheus-init"
-
-  for f in /etc/gotpl/alerts/*.tmpl; do
-    _gotpl "alerts/${f##*/}" "/etc/prometheus/alerts/$(basename "${f%.tmpl}")"
-  done
-
-  for f in /etc/gotpl/rules/*.tmpl; do
-    _gotpl "rules/${f##*/}" "/etc/prometheus/rules/$(basename "${f%.tmpl}")"
-  done
 }
 
 sudo init_volumes
-
-mkdir -p /etc/prometheus/alerts
-mkdir -p /etc/prometheus/rules
 
 process_templates
 
