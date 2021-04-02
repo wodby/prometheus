@@ -1,21 +1,23 @@
 ARG APP_VER
 ARG BASE_IMAGE_TAG
 
-FROM prom/prometheus:${APP_VER}
+#--------------------------------------------------------------
+FROM prom/prometheus:${APP_VER} as prom_orig
 
+#--------------------------------------------------------------
 FROM wodby/alpine:${BASE_IMAGE_TAG}
 
 ARG APP_VER
 
 ENV PROM_VER="${APP_VER}"
 
-COPY --from=0 /bin/prometheus                           /usr/local/bin/
-COPY --from=0 /bin/promtool                             /usr/local/bin/
-COPY --from=0 /etc/prometheus/prometheus.yml            /etc/prometheus/prometheus.yaml
-COPY --from=0 /usr/share/prometheus/console_libraries/  /usr/share/prometheus/console_libraries/
-COPY --from=0 /usr/share/prometheus/consoles/           /usr/share/prometheus/consoles/
-
+COPY --from=prom_orig /bin/prometheus                           /usr/local/bin/
+COPY --from=prom_orig /bin/promtool                             /usr/local/bin/
+COPY --from=prom_orig /usr/share/prometheus/console_libraries/  /usr/share/prometheus/console_libraries/
+COPY --from=prom_orig /usr/share/prometheus/consoles/           /usr/share/prometheus/consoles/
 COPY docker-entrypoint.sh /
+COPY ./bin/ /usr/local/bin/
+COPY ./templates/ /etc/gotpl/
 
 RUN set -ex; \
     addgroup -S prom; \
@@ -24,23 +26,21 @@ RUN set -ex; \
     apk add --update --no-cache sudo; \
     \
     chmod +x /docker-entrypoint.sh; \
+    chmod +x /usr/local/bin/init_scripts; \
+    chmod +x /usr/local/bin/init_volumes; \
     \
     mkdir -p \
         /etc/prometheus \
-        /var/lib/prometheus \
-        /mnt/config; \
+        /var/lib/prometheus; \
     \
     chown -R prom:prom \
         /etc/prometheus \
-        /usr/local/bin/prometheus \
-        /usr/local/bin/promtool \
-        /var/lib/prometheus \
-        /mnt/config; \
+        /var/lib/prometheus; \
     \
-    echo "chown prom:prom /var/lib/prometheus /mnt/config" > /usr/local/bin/init_volumes; \
     chmod +x /usr/local/bin/init_volumes; \
     { \
         echo -n 'prom ALL=(root) NOPASSWD:SETENV: '; \
+        echo -n '/usr/local/bin/init_scripts, '; \
         echo '/usr/local/bin/init_volumes'; \
     } | tee /etc/sudoers.d/prom; \
     \
@@ -50,8 +50,10 @@ RUN set -ex; \
 
 USER prom
 
-EXPOSE 9090
+VOLUME /var/lib/prometheus
 WORKDIR /home/prom
 
+EXPOSE 9090
+
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["/usr/local/bin/prometheus", "--config.file=/etc/prometheus/prometheus.yaml", "--storage.tsdb.path=/var/lib/prometheus", "--web.console.libraries=/usr/share/prometheus/console_libraries", "--web.console.templates=/usr/share/prometheus/consoles"]
+CMD ["/usr/local/bin/prometheus-init"]

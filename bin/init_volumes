@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+if [[ -n "${DEBUG}" ]]; then
+  set -x
+fi
+
+chown -R prom /etc/prometheus
+chown -R prom /var/lib/prometheus
