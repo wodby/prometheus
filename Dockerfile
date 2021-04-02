@@ -25,22 +25,17 @@ RUN set -ex; \
     \
     apk add --update --no-cache sudo; \
     \
+    mkdir -p /etc/prometheus /var/lib/prometheus; \
+    chown -R prom:prom /etc/prometheus /var/lib/prometheus; \
+    \
     chmod +x /docker-entrypoint.sh \
-        /usr/local/bin/init_scripts \
-        /usr/local/bin/init_volumes; \
-    \
-    mkdir -p \
-        /etc/prometheus \
-        /var/lib/prometheus; \
-    \
-    chown -R prom:prom \
-        /etc/prometheus \
-        /var/lib/prometheus; \
+        /usr/local/bin/init_volumes \
+        /usr/local/bin/init_scripts; \
     \
     { \
         echo -n 'prom ALL=(root) NOPASSWD:SETENV: '; \
-        echo -n '/usr/local/bin/init_scripts, '; \
-        echo '/usr/local/bin/init_volumes'; \
+        echo -n '/usr/local/bin/init_volumes, '; \
+        echo '/usr/local/bin/init_scripts'; \
     } | tee /etc/sudoers.d/prom; \
     \
     rm -rf \
