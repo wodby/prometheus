@@ -6,7 +6,7 @@ if [[ "${GITHUB_REF}" == refs/heads/main || "${GITHUB_REF}" == refs/tags/* ]]; t
     docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}"
 
     if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-      export TAGS="${GITHUB_REF##*/}"
+      export STABILITY_TAG="${GITHUB_REF##*/}"
     fi
 
     IFS=',' read -ra tags <<< "${TAGS}"
