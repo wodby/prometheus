@@ -14,14 +14,13 @@ _gotpl() {
 
 process_templates() {
   _gotpl "prometheus.yaml.tmpl" "/etc/prometheus/prometheus.yaml"
-  _gotpl "prometheus-init.sh.tmpl" "/usr/local/bin/prometheus-init"
 }
 
 sudo init_volumes
 
 process_templates
 
-sudo init_scripts
+sudo -E init_scripts
 
 # shellcheck disable=SC2068
 exec $@
