@@ -9,6 +9,7 @@ FROM wodby/alpine:${BASE_IMAGE_TAG}
 
 ARG APP_VER
 
+ENV TRIGGER_CI=2
 ENV PROM_VER="${APP_VER}"
 
 COPY --from=prom_orig /bin/prometheus                           /usr/local/bin/
