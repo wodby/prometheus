@@ -7,7 +7,7 @@ if [[ -n "${DEBUG}" ]]; then
 fi
 
 exec /usr/local/bin/prometheus \
-    --config.file=/etc/prometheus/prometheus.yaml \
+    --config.file=/etc/prometheus/prometheus.yml \
     --storage.tsdb.path=/var/lib/prometheus \
     --storage.tsdb.retention.time={{ getenv "PROM_STORAGE_RETENTION_TIME" "7d" }} \
     {{ if getenv "PROM_ENABLE_REMOTE_WRITE_RECEIVER" }} --enable-feature=remote-write-receiver {{ end }} \
