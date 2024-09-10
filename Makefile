@@ -54,6 +54,10 @@ buildx-push:
 	    ./
 .PHONY: buildx-push
 
+test:
+	echo "no tests :("
+.PHONY: test
+
 push:
 	docker push $(REPO):$(TAG)
 .PHONY: push
