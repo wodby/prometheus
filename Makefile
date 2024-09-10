@@ -3,7 +3,9 @@ APP_MINOR_VER ?= $(shell echo "${APP_VER}" | grep -oE '^v[0-9]+\.[0-9]+')
 
 TAG ?= $(APP_MINOR_VER)
 
-ALPINE_VER ?= 3.13
+PLATFORM ?= linux/arm64
+
+ALPINE_VER ?= 3.20
 
 ifeq ($(BASE_IMAGE_STABILITY_TAG),)
     BASE_IMAGE_TAG := $(ALPINE_VER)
@@ -27,6 +29,30 @@ build:
         --build-arg BASE_IMAGE_TAG=$(BASE_IMAGE_TAG) \
 	    --build-arg APP_VER=$(APP_VER) ./
 .PHONY: build
+
+# --load doesn't work with multiple platforms https://github.com/docker/buildx/issues/59
+# we need to save cache to run tests first.
+buildx-build-amd64:
+	docker buildx build --platform linux/amd64 -t $(REPO):$(TAG) \
+	    --build-arg BASE_IMAGE_TAG=$(BASE_IMAGE_TAG) \
+	    --build-arg APP_VER=$(APP_VER) \
+		--load \
+	    ./
+.PHONY: buildx-build-amd64
+
+buildx-build:
+	docker buildx build --platform $(PLATFORM) -t $(REPO):$(TAG) \
+	    --build-arg BASE_IMAGE_TAG=$(BASE_IMAGE_TAG) \
+	    --build-arg APP_VER=$(APP_VER) \
+	    ./
+.PHONY: buildx-build
+
+buildx-push:
+	docker buildx build --push --platform $(PLATFORM) -t $(REPO):$(TAG) \
+	    --build-arg BASE_IMAGE_TAG=$(BASE_IMAGE_TAG) \
+	    --build-arg APP_VER=$(APP_VER) \
+	    ./
+.PHONY: buildx-push
 
 push:
 	docker push $(REPO):$(TAG)

@@ -2,7 +2,7 @@ ARG APP_VER
 ARG BASE_IMAGE_TAG
 
 #--------------------------------------------------------------
-FROM prom/prometheus:${APP_VER} as prom_orig
+FROM prom/prometheus:${APP_VER} AS prom_orig
 
 #--------------------------------------------------------------
 FROM wodby/alpine:${BASE_IMAGE_TAG}
