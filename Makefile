@@ -1,4 +1,4 @@
-APP_VER ?= v2.25.0
+APP_VER ?= v3.0.0
 APP_MINOR_VER ?= $(shell echo "${APP_VER}" | grep -oE '^v[0-9]+\.[0-9]+')
 
 TAG ?= $(APP_MINOR_VER)

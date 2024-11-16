@@ -10,6 +10,4 @@ exec /usr/local/bin/prometheus \
     --config.file=/etc/prometheus/prometheus.yml \
     --storage.tsdb.path=/var/lib/prometheus \
     --storage.tsdb.retention.time={{ getenv "PROM_STORAGE_RETENTION_TIME" "7d" }} \
-    {{ if getenv "PROM_ENABLE_REMOTE_WRITE_RECEIVER" }} --enable-feature=remote-write-receiver {{ end }} \
-    --web.console.libraries=/usr/share/prometheus/console_libraries \
-    --web.console.templates=/usr/share/prometheus/consoles
+    {{ if getenv "PROM_ENABLE_REMOTE_WRITE_RECEIVER" }} --enable-feature=remote-write-receiver {{ end }}

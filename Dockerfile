@@ -13,8 +13,6 @@ ENV PROM_VER="${APP_VER}"
 
 COPY --from=prom_orig /bin/prometheus                           /usr/local/bin/
 COPY --from=prom_orig /bin/promtool                             /usr/local/bin/
-COPY --from=prom_orig /usr/share/prometheus/console_libraries/  /usr/share/prometheus/console_libraries/
-COPY --from=prom_orig /usr/share/prometheus/consoles/           /usr/share/prometheus/consoles/
 COPY docker-entrypoint.sh /
 COPY ./bin/ /usr/local/bin/
 COPY ./templates/ /etc/gotpl/
