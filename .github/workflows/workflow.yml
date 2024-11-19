@@ -26,5 +26,5 @@ jobs:
     - uses: ./.github/actions
       with:
         version: v3.0.0
-        tags: v3.0.0,latest
+        tags: 3,3.0,latest
         platform: linux/amd64,linux/arm64
