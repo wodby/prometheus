@@ -6,4 +6,4 @@ global:
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
-      - targets: [ 'localhost:9090' ]
+      - targets: [ '{{ getenv "PROM_SCRAPE_CONFIGS_STATIC_CONFIGS_TARGET" "localhost:9090" }}' ]
