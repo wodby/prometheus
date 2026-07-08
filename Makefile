@@ -1,90 +1,68 @@
-APP_VER ?= v3.0.0
-APP_MINOR_VER ?= $(shell echo "${APP_VER}" | grep -oE '^v[0-9]+\.[0-9]+')
+-include env_make
 
-TAG ?= $(APP_MINOR_VER)
+PROMETHEUS_VER ?= 3.13.0
+PROMETHEUS_VER_MINOR := $(shell v='$(PROMETHEUS_VER)'; echo "$${v%.*}")
+
+TAG ?= $(PROMETHEUS_VER_MINOR)
+
+REPO = wodby/prometheus
+NAME = prometheus-$(PROMETHEUS_VER_MINOR)
 
 PLATFORM ?= linux/arm64
 
-ALPINE_VER ?= 3.20
+IMAGETOOLS_TAG ?= $(TAG)
 
-ifeq ($(BASE_IMAGE_STABILITY_TAG),)
-    BASE_IMAGE_TAG := $(ALPINE_VER)
-else
-    BASE_IMAGE_TAG := $(ALPINE_VER)-$(BASE_IMAGE_STABILITY_TAG)
+ifneq ($(ARCH),)
+	override TAG := $(TAG)-$(ARCH)
 endif
 
-REPO = wodby/prometheus
-NAME = prometheus-$(APP_MINOR_VER)
-
-ifneq ($(STABILITY_TAG),)
-    ifneq ($(TAG),latest)
-        override TAG := $(TAG)-$(STABILITY_TAG)
-    endif
-endif
+.PHONY: build buildx-build buildx-push buildx-imagetools-create test push shell run start stop logs clean release
 
 default: build
 
 build:
 	docker build -t $(REPO):$(TAG) \
-        --build-arg BASE_IMAGE_TAG=$(BASE_IMAGE_TAG) \
-	    --build-arg APP_VER=$(APP_VER) ./
-.PHONY: build
-
-# --load doesn't work with multiple platforms https://github.com/docker/buildx/issues/59
-# we need to save cache to run tests first.
-buildx-build-amd64:
-	docker buildx build --platform linux/amd64 -t $(REPO):$(TAG) \
-	    --build-arg BASE_IMAGE_TAG=$(BASE_IMAGE_TAG) \
-	    --build-arg APP_VER=$(APP_VER) \
-		--load \
-	    ./
-.PHONY: buildx-build-amd64
+		--build-arg PROMETHEUS_VER=$(PROMETHEUS_VER) \
+		./
 
 buildx-build:
 	docker buildx build --platform $(PLATFORM) -t $(REPO):$(TAG) \
-	    --build-arg BASE_IMAGE_TAG=$(BASE_IMAGE_TAG) \
-	    --build-arg APP_VER=$(APP_VER) \
-	    ./
-.PHONY: buildx-build
+		--build-arg PROMETHEUS_VER=$(PROMETHEUS_VER) \
+		--load \
+		./
 
 buildx-push:
-	docker buildx build --push --platform $(PLATFORM) -t $(REPO):$(TAG) \
-	    --build-arg BASE_IMAGE_TAG=$(BASE_IMAGE_TAG) \
-	    --build-arg APP_VER=$(APP_VER) \
-	    ./
-.PHONY: buildx-push
+	docker buildx build --platform $(PLATFORM) --push -t $(REPO):$(TAG) \
+		--build-arg PROMETHEUS_VER=$(PROMETHEUS_VER) \
+		./
+
+buildx-imagetools-create:
+	docker buildx imagetools create -t $(REPO):$(IMAGETOOLS_TAG) \
+				$(REPO):$(TAG)-amd64 \
+				$(REPO):$(TAG)-arm64
 
 test:
 	echo "no tests :("
-.PHONY: test
 
 push:
 	docker push $(REPO):$(TAG)
-.PHONY: push
 
 shell:
 	docker run --rm --name $(NAME) -i -t $(PORTS) $(VOLUMES) $(ENV) $(REPO):$(TAG) /bin/bash
-.PHONY: shell
 
 run:
 	docker run --rm --name $(NAME) $(PORTS) $(VOLUMES) $(ENV) $(REPO):$(TAG) $(CMD)
-.PHONY: run
 
 start:
 	docker run -d --name $(NAME) $(PORTS) $(VOLUMES) $(ENV) $(REPO):$(TAG)
-.PHONY: start
 
 stop:
 	docker stop $(NAME)
-.PHONY: stop
 
 logs:
 	docker logs $(NAME)
-.PHONY: logs
 
 clean:
 	-docker rm -f $(NAME)
-.PHONY: clean
 
 release: build push
-.PHONY: release

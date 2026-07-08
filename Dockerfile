@@ -1,15 +1,14 @@
-ARG APP_VER
-ARG BASE_IMAGE_TAG
+ARG PROMETHEUS_VER=3.13.0
 
 #--------------------------------------------------------------
-FROM prom/prometheus:${APP_VER} AS prom_orig
+FROM prom/prometheus:v${PROMETHEUS_VER} AS prom_orig
 
 #--------------------------------------------------------------
-FROM wodby/alpine:${BASE_IMAGE_TAG}
+FROM wodby/alpine:3.24
 
-ARG APP_VER
+ARG PROMETHEUS_VER
 
-ENV PROM_VER="${APP_VER}"
+ENV PROMETHEUS_VER="${PROMETHEUS_VER}"
 
 COPY --from=prom_orig /bin/prometheus                           /usr/local/bin/
 COPY --from=prom_orig /bin/promtool                             /usr/local/bin/
