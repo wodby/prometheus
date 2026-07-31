@@ -11,7 +11,7 @@ on:
   pull_request:
 
 env:
-  PROMETHEUS313: '3.13.1'
+  PROMETHEUS313: '3.13.2'
 
 jobs:
   setup:
