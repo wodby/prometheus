@@ -1,6 +1,6 @@
 -include env_make
 
-PROMETHEUS_VER ?= 3.13.2
+PROMETHEUS_VER ?= 3.13.3
 PROMETHEUS_VER_MINOR := $(shell v='$(PROMETHEUS_VER)'; echo "$${v%.*}")
 
 TAG ?= $(PROMETHEUS_VER_MINOR)
