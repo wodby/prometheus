@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "image": "wodby/prometheus",
+  "versions": [
+    {
+      "version": {
+        "env": "PROMETHEUS313"
+      },
+      "variants": [
+        {
+          "short": [
+            "{minor}",
+            "{major}"
+          ],
+          "full": "{version}"
+        }
+      ]
+    }
+  ]
+}
