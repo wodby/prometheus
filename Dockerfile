@@ -16,6 +16,9 @@ COPY docker-entrypoint.sh /
 COPY ./bin/ /usr/local/bin/
 COPY ./templates/ /etc/gotpl/
 
+# Refresh inherited security fixes when rebuilding this image.
+RUN apk upgrade --no-cache
+
 RUN set -ex; \
     addgroup -S prom; \
     adduser -S -D -H -h /home/prom -s /sbin/nologin -G prom prom; \
