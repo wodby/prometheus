@@ -7,6 +7,7 @@ FROM prom/prometheus:v${PROMETHEUS_VER} AS prom_orig
 FROM wodby/alpine:3.24
 
 ARG PROMETHEUS_VER
+ARG TARGETPLATFORM
 
 ENV PROMETHEUS_VER="${PROMETHEUS_VER}"
 
@@ -21,6 +22,11 @@ RUN set -ex; \
     adduser -S -D -H -h /home/prom -s /sbin/nologin -G prom prom; \
     \
     apk add --update --no-cache sudo; \
+    \
+    # gotpl renders the configuration templates in /etc/gotpl when the container starts. \
+    platform="${TARGETPLATFORM:-linux/amd64}"; \
+    gotpl_url="https://github.com/wodby/gotpl/releases/latest/download/gotpl-${platform/\//-}.tar.gz"; \
+    wget -qO- "${gotpl_url}" | tar xz --no-same-owner -C /usr/local/bin; \
     \
     mkdir -p /etc/prometheus /var/lib/prometheus; \
     chown -R prom:prom /etc/prometheus /var/lib/prometheus; \
